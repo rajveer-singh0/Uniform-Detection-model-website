@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uniform Detection</title>
+    <!-- Include Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Link the CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+
+</head>
+<body>
+    <h1>Uniform Detection</h1>
+    <button id="cameraBtn">Use Camera</button>
+    <button id="uploadBtn">Upload Image</button>
+    <input type="file" id="fileInput" accept="image/*" style="display: none;">
+
+    <!-- Drag and Drop Area -->
+    <div id="dropArea">
+        Drag and drop an image here or click to upload.
+    </div>
+
+    <!-- Camera Feed and Buttons -->
+    <div id="cameraContainer" style="display: none;">
+        <video id="cameraFeed" autoplay></video>
+        <br>
+        <button id="submitBtn">Submit</button>
+        <button id="cancelBtn">Cancel</button>
+    </div>
+
+    <!-- Modal for displaying result -->
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <div id="modalIcon" class="modal-icon"></div>
+            <div id="modalMessage"></div>
+            <button id="backButton" class="modal-button">Back</button>
+        </div>
+    </div>
+
+    <!-- Overlay for modal -->
+    <div id="overlay" class="overlay"></div>
+
+    <script>
+        let stream;
+
+        // Handle camera button click
+        document.getElementById('cameraBtn').addEventListener('click', async () => {
+            try {
+                // Access the camera
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const video = document.getElementById('cameraFeed');
+                video.srcObject = stream;
+
+                // Show the camera feed and buttons
+                document.getElementById('cameraContainer').style.display = 'block';
+            } catch (error) {
+                alert('Error accessing camera: ' + error.message);
+            }
+        });
+
+        // Handle submit button click
+        document.getElementById('submitBtn').addEventListener('click', async () => {
+            const video = document.getElementById('cameraFeed');
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const context = canvas.getContext('2d');
+
+            // Capture the current frame from the video feed
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Convert canvas image to Blob and send to server
+            canvas.toBlob(async (blob) => {
+                const formData = new FormData();
+                formData.append('file', blob, 'camera_image.jpg');
+
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData,
+                });
+                const data = await response.json();
+
+                // Show the result in the modal
+                showResultModal(data.result);
+
+                // Stop the camera stream
+                stream.getTracks().forEach(track => track.stop());
+                document.getElementById('cameraContainer').style.display = 'none';
+            }, 'image/jpeg');
+        });
+
+        // Handle cancel button click
+        document.getElementById('cancelBtn').addEventListener('click', () => {
+            // Stop the camera stream
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            document.getElementById('cameraContainer').style.display = 'none';
+        });
+
+        // Handle upload button click
+        document.getElementById('uploadBtn').addEventListener('click', () => {
+            document.getElementById('fileInput').click();
+        });
+
+        // Handle file input change
+        document.getElementById('fileInput').addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData,
+                });
+                const data = await response.json();
+
+                // Show the result in the modal
+                showResultModal(data.result);
+            }
+        });
+
+        // Handle drag and drop
+        const dropArea = document.getElementById('dropArea');
+
+        dropArea.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            dropArea.classList.add('dragover');
+        });
+
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.classList.remove('dragover');
+        });
+
+        dropArea.addEventListener('drop', (event) => {
+            event.preventDefault();
+            dropArea.classList.remove('dragover');
+
+            const file = event.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                fetch('/predict', {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Show the result in the modal
+                    showResultModal(data.result);
+                });
+            } else {
+                alert('Please drop a valid image file.');
+            }
+        });
+
+        // Handle click on drop area to open file dialog
+        dropArea.addEventListener('click', () => {
+            document.getElementById('fileInput').click();
+        });
+
+        // Function to show the result modal
+        function showResultModal(result) {
+            const modal = document.getElementById('resultModal');
+            const overlay = document.getElementById('overlay');
+            const modalIcon = document.getElementById('modalIcon');
+            const modalMessage = document.getElementById('modalMessage');
+
+            // Update the modal content
+            if (result === "Uniform Detected") {
+                modalIcon.innerHTML = '<i class="fas fa-check-circle" style="color: green;"></i>';
+                modalMessage.innerText = "Uniform Detected";
+            } else {
+                modalIcon.innerHTML = '<i class="fas fa-times-circle" style="color: red;"></i>';
+                modalMessage.innerText = "Non-Uniform Detected";
+            }
+
+            // Show the modal and overlay
+            modal.style.display = 'block';
+            overlay.style.display = 'block';
+        }
+
+        // Handle back button click
+        document.getElementById('backButton').addEventListener('click', () => {
+            const modal = document.getElementById('resultModal');
+            const overlay = document.getElementById('overlay');
+
+            // Hide the modal and overlay
+            modal.style.display = 'none';
+            overlay.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
