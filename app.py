@@ -7,7 +7,7 @@ import os
 app = Flask(__name__)
 
 # Load the trained model
-model = tf.keras.models.load_model('uniform_detection_model.h5')
+model = tf.keras.models.load_model('uniform_detection_model.keras')
 
 # Function to preprocess the image
 def preprocess_image(image_path):

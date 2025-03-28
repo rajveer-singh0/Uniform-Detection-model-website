@@ -4,7 +4,7 @@ import numpy as np
 import cv2
 
 # Load the saved model
-model = load_model('uniform_detection_model.h5')
+model = load_model('uniform_detection_model.keras')
 
 # Function to preprocess the image
 def preprocess_image(image_path):
@@ -16,11 +16,11 @@ def preprocess_image(image_path):
 
 # Path to the specific test image
 # test1
-# image_path = r"C:\Users\rdpto\Desktop\uniform detection project\Data\uniform\IMG_20250214_131005.jpg"
+image_path = r"C:\Users\rdpto\Desktop\rajveer_idcard_inhance.png"
 
 # testing2
 
-image_path = r"C:\Users\rdpto\Desktop\uniform detection project\Data\nonuniform\WhatsApp Image 2025-02-14 at 22.17.28_9244f03f.jpg"
+# image_path = r"C:\Users\rdpto\Desktop\uniform detection project\Data\nonuniform\WhatsApp Image 2025-02-14 at 22.17.28_9244f03f.jpg"
 
 # testing 3
 # image_path =r"C:\Users\rdpto\Desktop\uniform detection project\Data\uniform\IMG_20250214_130940.jpg"

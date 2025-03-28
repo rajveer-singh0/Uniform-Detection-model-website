@@ -22,10 +22,12 @@ A web-based application for detecting college uniforms in images using a Convolu
 ## **Technologies Used**
 
 - **Backend**:
-  - Python
-  - Flask (for web server)
-  - TensorFlow (for the CNN model)
-  - OpenCV (for image processing)
+  - Python version 3.10.11
+  - Flask~=3.1.0 (for web server)
+  - tensorflow~=2.13.1 (for the CNN model)
+  - opencv-python~=4.11.0.86 (for image processing)
+  - matplotlib~=3.10.0
+  - numpy~=1.24.3
 
 - **Frontend**:
   - HTML, CSS, JavaScript
@@ -37,5 +39,5 @@ A web-based application for detecting college uniforms in images using a Convolu
 
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/rajveer-singh0/uniform-detection-project.git
+   git clone https://github.com/rajveer-singh0/rajveer-singh0/Uniform-Detection-model.git
    cd uniform-detection-project

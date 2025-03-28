@@ -1,3 +1,7 @@
+
+# .......................code 2.........................................
+
+#
 # # Import necessary libraries
 # import tensorflow as tf
 # from tensorflow.keras.preprocessing.image import ImageDataGenerator
@@ -5,9 +9,12 @@
 # from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
 # import matplotlib.pyplot as plt
 #
+# # Verify GPU availability
+# print("GPU available:", tf.config.list_physical_devices('GPU'))
+#
 # # Define paths
-# train_dir = r"C:\Users\rdpto\Desktop\unifromdata\train"  # Path to training dataset
-# validation_dir = r"C:\Users\rdpto\Desktop\unifromdata\validation"  # Path to validation dataset
+# train_dir = r"C:\Users\rdpto\Desktop\unifromData\train"  # Path to training dataset
+# validation_dir = r"C:\Users\rdpto\Desktop\unifromData\validation"  # Path to validation dataset
 #
 # # Define constants
 # IMAGE_SIZE = (128, 128)  # Resize images to 128x128
@@ -44,11 +51,6 @@
 #     batch_size=BATCH_SIZE,
 #     class_mode='binary'
 # )
-#
-# # Verify the datasets
-# print(f"Number of training samples: {train_generator.samples}")
-# print(f"Number of validation samples: {validation_generator.samples}")
-# print(f"Class indices: {train_generator.class_indices}")
 #
 # # Build the CNN model
 # model = Sequential([
@@ -107,8 +109,9 @@
 
 
 
-# .......................code 2.........................................
 
+
+# ........................code 3...........................................................
 
 # Import necessary libraries
 import tensorflow as tf
@@ -189,8 +192,35 @@ history = model.fit(
 )
 
 # Save the model
-model.save('uniform_detection_model.h5')
-print("Model saved as 'uniform_detection_model.h5'")
+# model.save('uniform_detection_model.h5')
+model.save('uniform_detection_model.keras')
+print("Model saved as 'uniform_detection_model.keras'")
+
+# # Plot training and validation accuracy/loss
+# plt.figure(figsize=(12, 4))
+#
+# # Plot accuracy
+# plt.subplot(1, 2, 1)
+# plt.plot(history.history['accuracy'], label='Training Accuracy')
+# # plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
+# plt.plot(history.history['val_acc'], label='Validation Accuracy')  # For older versions
+# plt.title('Training and Validation Accuracy')
+# plt.xlabel('Epoch')
+# plt.ylabel('Accuracy')
+# plt.legend()
+#
+# # Plot loss
+# plt.subplot(1, 2, 2)
+# plt.plot(history.history['loss'], label='Training Loss')
+# plt.plot(history.history['val_loss'], label='Validation Loss')
+# plt.title('Training and Validation Loss')
+# plt.xlabel('Epoch')
+# plt.ylabel('Loss')
+# plt.legend()
+#
+# plt.show()
+
+# ............2.............
 
 # Plot training and validation accuracy/loss
 plt.figure(figsize=(12, 4))
@@ -214,3 +244,9 @@ plt.ylabel('Loss')
 plt.legend()
 
 plt.show()
+
+# Evaluate the model on the validation dataset
+# val_loss, val_accuracy = model.evaluate(validation_generator, steps=validation_generator.samples // BATCH_SIZE)
+#
+# # Print the validation accuracy
+# print(f"Validation Accuracy: {val_accuracy * 100:.2f}%")
